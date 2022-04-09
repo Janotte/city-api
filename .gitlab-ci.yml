@@ -1,0 +1,22 @@
+variables:
+  MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=./.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+
+cache:
+  paths:
+    - ./.m2/repository
+  # keep cache across branch
+  key: "$CI_BUILD_REF_NAME"
+
+stages:          # List of stages for jobs, and their order of execution
+  - build
+
+build-job:       # This job runs in the build stage, which runs first.
+  stage: build
+  script:
+    - echo "Compiling the code..."
+    - "mvn clean compile $MAVEN_CLI_OPTS"
+    - echo "Compile complete."
+  artifacts:
+    paths:
+      - target/
