@@ -10,6 +10,7 @@ cache:
 
 stages:          # List of stages for jobs, and their order of execution
   - build
+  - test
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
@@ -20,3 +21,16 @@ build-job:       # This job runs in the build stage, which runs first.
   artifacts:
     paths:
       - target/
+
+unittest-job:
+  stage: test
+  dependencies:
+    - build-job
+  script:
+    - echo "Running unit tests of the City API Application..."
+    - "mvn verify compile $MAVEN_CLI_OPTS"
+    - echo "Completed Unit Tests of the City API Application."
+  artifacts:
+    paths:
+      - target/
+
