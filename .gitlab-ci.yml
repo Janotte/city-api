@@ -17,6 +17,7 @@ stages:          # List of stages for jobs, and their order of execution
   - build
   - test
   - copy-to-s3
+  - deploy
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
@@ -64,3 +65,15 @@ copy-to-s3-job:
   artifacts:
     paths:
       - target/
+
+deploy-job:
+  stage: deploy
+  dependencies:
+    - copy-to-s3-job
+  script:
+    - echo "Running deploy of the City API Application..."
+    - aws elasticbeanstalk create-application-version --application-name city-api --version-label ${CI_COMMIT_SHA} --source-bundle S3Bucket=city-api-files,S3Key=$JAR_NAME
+    - aws elasticbeanstalk update-environment --application-name city-api --environment-name city-api-prod --version-label ${CI_COMMIT_SHA}
+  artifacts:
+    paths:
+      - "/target/*.jar"
