@@ -28,7 +28,7 @@ unittest-job:
     - build-job
   script:
     - echo "Running unit tests of the City API Application..."
-    - "mvn verify compile $MAVEN_CLI_OPTS"
+    - "mvn verify $MAVEN_CLI_OPTS"
     - echo "Completed Unit Tests of the City API Application."
   artifacts:
     paths:
