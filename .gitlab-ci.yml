@@ -76,4 +76,4 @@ deploy-job:
     - aws elasticbeanstalk update-environment --application-name city-api --environment-name city-api-prod --version-label ${CI_COMMIT_SHA}
   artifacts:
     paths:
-      - "/target/*.jar"
+      - target/*.jar
