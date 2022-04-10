@@ -14,7 +14,7 @@ variables:
   JAR_NAME: "city-api-0.0.1-SNAPSHOT.jar"
   APPLICATION_NAME: "APPLICATION_NAME"
   ENVIRONMENT_NAME: "city-api-prod"
-  VERSION_LABEL: "0.0.1"
+  VERSION_LABEL: "Sample Application"
 
 stages:
   - prebuild
