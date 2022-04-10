@@ -6,6 +6,7 @@ variables:
   REGION: "AWS_DEFAULT_REGION"
   S3_BUCKET: "$AWS_S3_BUCKET"
   JAR_NAME: "city-api-0.0.1-SNAPSHOT.jar"
+  APPLICATION_NAME: "city-api"
 
 cache:
   paths:
@@ -72,8 +73,8 @@ deploy-job:
     - copy-to-s3-job
   script:
     - echo "Running deploy of the City API Application..."
-    - aws elasticbeanstalk create-application-version --application-name city-api --version-label "Sample Application" --source-bundle S3Bucket=city-api-files,S3Key=$JAR_NAME
-    - aws elasticbeanstalk update-environment --application-name city-api --environment-name Cityapi-env-1 --version-label "Sample Application"
+    - aws elasticbeanstalk create-application-version --application-name $APPLICATION_NAME --version-label ${CI_COMMIT_SHA} --source-bundle S3Bucket=city-api-files,S3Key=$JAR_NAME
+    - aws elasticbeanstalk update-environment --application-name $APPLICATION_NAME --environment-name $APPLICATION_NAME-prod --version-label ${CI_COMMIT_SHA}
   artifacts:
     paths:
       - target/*.jar
