@@ -12,70 +12,21 @@ variables:
   REGION: "AWS_DEFAULT_REGION"
   S3_BUCKET: "$AWS_S3_BUCKET"
   JAR_NAME: "city-api-0.0.1-SNAPSHOT.jar"
-  APPLICATION_NAME: "city-api"
-  VERSION_LABEL: "Sample Application"
+  APPLICATION_NAME: "APPLICATION_NAME"
 
 stages:
-  - build
-  - test
-  - copy-to-s3
-  - deploy
+  - prebuild
 
-build-job:
-  stage: build
-  script:
-    - echo "Compiling the code..."
-    - "mvn clean compile $MAVEN_CLI_OPTS"
-    - echo "Compile complete."
-  artifacts:
-    paths:
-      - target/
-
-unittest-job:
-  stage: test
-  dependencies:
-    - build-job
-  script:
-    - echo "Running unit tests of the City API Application..."
-    - "mvn verify $MAVEN_CLI_OPTS"
-    - echo "Completed Unit Tests of the City API Application."
-  artifacts:
-    paths:
-      - target/
-
-integrationtest-job:
-  stage: test
-  dependencies:
-    - unittest-job
-  script:
-    - echo "Running Integration Tests of the City API Application..."
-    - "mvn package $MAVEN_CLI_OPTS"
-    - echo "Complete Integration Tests of the City API Application..."
-  artifacts:
-    paths:
-      - target/
-
-copy-to-s3-job:
-  stage: copy-to-s3
-  dependencies:
-    - integrationtest-job
+prebuild-job:
+  stage: prebuild
   script:
     - echo "Logging into AWS..."
-    - sh ./configure_aws.sh $ACCESS_KEY $SECRET_KEY $REGION
-    - echo "Copying Jar file to S3..."
-    - aws s3 cp target/$JAR_NAME s3://$S3_BUCKET/$JAR_NAME
-  artifacts:
-    paths:
-      - target/
+    - echo "Setting AWS Region..."
+    - aws configure set region $REGION
+    - echo "Setting AWS Access Key Id..."
+    - aws configure set aws_acccess_key_id $ACCESS_KEY
+    - echo "Setting AWS Setting Access Key..."
+    - aws configure set aws_secret_access_key $SECRET_KEY
 
-deploy-job:
-  stage: deploy
-  dependencies:
-    - copy-to-s3-job
-  script:
-    - echo "Running deploy of the City API Application..."
-    - aws elasticbeanstalk create-application-version --application-name city-api --version-label $VERSION_LABEL --source-bundle S3Bucket=city-api-files,S3Key=$JAR_NAME
-    - aws elasticbeanstalk update-environment --application-name city-api --environment-name city-api-prod --version-label $VERSION_LABEL
-  artifacts:
-    paths:
-      - target/*.jar
+
+
