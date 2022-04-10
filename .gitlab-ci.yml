@@ -4,17 +4,8 @@ cache:
   # keep cache across branch
   key: "$CI_BUILD_REF_NAME"
 
-before_script:
-  - echo '<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
-    https://maven.apache.org/xsd/settings-1.0.0.xsd">
-    <localRepository>'$PWD'.m2</localRepository>
-    </settings>' > $HOME/.m2/settings.xml
-
-
 variables:
-  MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2"
+  MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=C:\Users\sjano\.m2\repository"
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
 
 stages:          # List of stages for jobs, and their order of execution
