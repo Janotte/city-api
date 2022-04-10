@@ -18,6 +18,7 @@ stages:
   - prebuild
   - build
   - test
+  - copy-to-s3
 
 prebuild-job:
   stage: prebuild
@@ -60,6 +61,17 @@ integrationtest-job:
     - echo "Running Integration Tests of the City API Application..."
     - "mvn package $MAVEN_CLI_OPTS"
     - echo "Complete Integration Tests of the City API Application..."
+  artifacts:
+    paths:
+      - target/
+
+copy-to-s3-job:
+  stage: copy-to-s3
+  dependencies:
+    - integrationtest-job
+  script:
+    - echo "Copying Jar file to S3..."
+    - aws s3 cp target/$JAR_NAME s3://$S3_BUCKET/$JAR_NAME
   artifacts:
     paths:
       - target/
