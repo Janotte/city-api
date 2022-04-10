@@ -17,6 +17,7 @@ variables:
 stages:
   - build
   - test
+  - copy-to-s3
 
 build-job:
   stage: build
