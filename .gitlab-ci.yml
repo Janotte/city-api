@@ -74,8 +74,8 @@ deploy-job:
     - copy-to-s3-job
   script:
     - echo "Running deploy of the City API Application..."
-    - aws elasticbeanstalk create-application-version --application-name $APPLICATION_NAME --version-label $VERSION_LABEL --source-bundle S3Bucket=city-api-files,S3Key=$JAR_NAME
-    - aws elasticbeanstalk update-environment --application-name $APPLICATION_NAME --environment-name $APPLICATION_NAME-prod --version-label $VERSION_LABEL
+    - aws elasticbeanstalk create-application-version --application-name city-api --version-label $VERSION_LABEL --source-bundle S3Bucket=city-api-files,S3Key=$JAR_NAME
+    - aws elasticbeanstalk update-environment --application-name city-api --environment-name city-api-prod --version-label $VERSION_LABEL
   artifacts:
     paths:
       - target/*.jar
