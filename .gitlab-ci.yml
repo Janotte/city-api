@@ -85,10 +85,8 @@ deploy-job:
     - copy-to-s3-job
   script:
     - echo "Running deploy of the City API Application..."
-    - aws elasticbeanstalk create-application --application-name $APPLICATION_NAME
-    - aws elasticbeanstalk create-environment --application-name $APPLICATION_NAME --cname-prefix $APPLICATION_NAME --environment-name $ENVIRONMENT_NAME --solution-stack-name "Docker running on 64bit Amazon Linux 2/3.4.13"
-    - aws elasticbeanstalk create-application-version --application-name $APPLICATION_NAME --version-label $VERSION_LABEL --source-bundle S3Bucket=S3_BUCKET,S3Key=$$JAR_NAME
-    - aws elasticbeanstalk update-environment --environment-name $ENVIRONMENT_NAME --version-label $VERSION_LABEL
+    - aws elasticbeanstalk create-application-version --application-name $APPLICATION_NAME --version-label $VERSION_LABEL --source-bundle S3Bucket=$S3_BUCKET,S3Key=$JAR_NAME
+    - aws elasticbeanstalk update-environment --application-name $APPLICATION_NAME --environment-name $ENVIRONMENT_NAME --version-label $VERSION_LABEL
   artifacts:
     paths:
       - target/*.jar
