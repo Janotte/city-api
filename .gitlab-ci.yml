@@ -1,24 +1,24 @@
 cache:
   paths:
-    - .${CI_PROJECT_DIR]/.m2/
+    - .m2/
   # keep cache across branch
   key: "$CI_BUILD_REF_NAME"
+
+before_script:
+  - echo '<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+    https://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <localRepository>'$PWD'.m2</localRepository>
+    </settings>' > $HOME/.m2/settings.xml
+
 
 variables:
   MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2"
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
-  ACCESS_KEY: "$AWS_ACCESS_KEY_ID"
-  SECRET_KEY: "$AWS_SECRET_ACCESS_KEY"
-  REGION: "AWS_DEFAULT_REGION"
-  S3_BUCKET: "$AWS_S3_BUCKET"
-  JAR_NAME: "city-api-0.0.1-SNAPSHOT.jar"
-  APPLICATION_NAME: "city-api"
 
 stages:          # List of stages for jobs, and their order of execution
   - build
-  - test
-  - copy-to-s3
-  - deploy
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
@@ -29,52 +29,3 @@ build-job:       # This job runs in the build stage, which runs first.
   artifacts:
     paths:
       - target/
-
-unittest-job:
-  stage: test
-  dependencies:
-    - build-job
-  script:
-    - echo "Running unit tests of the City API Application..."
-    - "mvn verify $MAVEN_CLI_OPTS"
-    - echo "Completed Unit Tests of the City API Application."
-  artifacts:
-    paths:
-      - target/
-
-integrationtest-job:
-  stage: test
-  dependencies:
-    - unittest-job
-  script:
-    - echo "Running Integration Tests of the City API Application..."
-    - "mvn package $MAVEN_CLI_OPTS"
-    - echo "Complete Integration Tests of the City API Application..."
-  artifacts:
-    paths:
-      - target/
-
-copy-to-s3-job:
-  stage: copy-to-s3
-  dependencies:
-    - integrationtest-job
-  script:
-    - echo "Logging into AWS..."
-    - sh ./configure_aws.sh $ACCESS_KEY $SECRET_KEY $REGION
-    - echo "Copying Jar file to S3..."
-    - aws s3 cp target/$JAR_NAME s3://$S3_BUCKET/$JAR_NAME
-  artifacts:
-    paths:
-      - target/
-
-deploy-job:
-  stage: deploy
-  dependencies:
-    - copy-to-s3-job
-  script:
-    - echo "Running deploy of the City API Application..."
-    - aws elasticbeanstalk create-application-version --application-name $APPLICATION_NAME --version-label ${CI_COMMIT_SHA} --source-bundle S3Bucket=city-api-files,S3Key=$JAR_NAME
-    - aws elasticbeanstalk update-environment --application-name $APPLICATION_NAME --environment-name $APPLICATION_NAME-prod --version-label ${CI_COMMIT_SHA}
-  artifacts:
-    paths:
-      - target/*.jar
