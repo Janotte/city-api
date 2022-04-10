@@ -1,5 +1,11 @@
+cache:
+  paths:
+    - .${CI_PROJECT_DIR]/.m2/
+  # keep cache across branch
+  key: "$CI_BUILD_REF_NAME"
+
 variables:
-  MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=./.m2/repository"
+  MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2"
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
   ACCESS_KEY: "$AWS_ACCESS_KEY_ID"
   SECRET_KEY: "$AWS_SECRET_ACCESS_KEY"
@@ -7,12 +13,6 @@ variables:
   S3_BUCKET: "$AWS_S3_BUCKET"
   JAR_NAME: "city-api-0.0.1-SNAPSHOT.jar"
   APPLICATION_NAME: "city-api"
-
-cache:
-  paths:
-    - ./.m2/repository
-  # keep cache across branch
-  key: "$CI_BUILD_REF_NAME"
 
 stages:          # List of stages for jobs, and their order of execution
   - build
