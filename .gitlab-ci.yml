@@ -21,6 +21,7 @@ stages:
   - build
   - test
   - copy-to-s3
+  - deploy
 
 prebuild-job:
   stage: prebuild
