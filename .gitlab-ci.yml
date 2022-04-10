@@ -16,6 +16,7 @@ variables:
 
 stages:
   - prebuild
+  - build
 
 prebuild-job:
   stage: prebuild
@@ -28,5 +29,14 @@ prebuild-job:
     - echo "Setting AWS Setting Access Key..."
     - aws configure set aws_secret_access_key $SECRET_KEY
 
+build-job:
+  stage: build
+  script:
+    - echo "Compiling the code..."
+    - "mvn clean compile $MAVEN_CLI_OPTS"
+    - echo "Compile complete."
+  artifacts:
+    paths:
+      - target/
 
 
