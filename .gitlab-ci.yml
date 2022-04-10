@@ -51,5 +51,11 @@ unittest-job:
   artifacts:
     paths:
       - target/
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - package.json
+      when: on_success
+    - when: never
 
 
