@@ -1,12 +1,12 @@
 cache:
   paths:
-    - .m2/
+    - ./.m2/repository
   # keep cache across branch
-  key: "$CI_BUILD_REF_NAME"
+  key: "$CI_PROJECT_PATH"
 
 variables:
-  MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=C:\Users\sjano\.m2\repository"
-  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+  MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -Dmaven.repo.local=./.m2/repository"
 
 stages:          # List of stages for jobs, and their order of execution
   - build
