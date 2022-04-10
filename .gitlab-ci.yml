@@ -7,12 +7,18 @@ cache:
 variables:
   MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=.m2/repository"
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -Dmaven.repo.local=./.m2/repository"
+  ACCESS_KEY: "$AWS_ACCESS_KEY_ID"
+  SECRET_KEY: "$AWS_SECRET_ACCESS_KEY"
+  REGION: "AWS_DEFAULT_REGION"
+  S3_BUCKET: "$AWS_S3_BUCKET"
+  JAR_NAME: "city-api-0.0.1-SNAPSHOT.jar"
+  APPLICATION_NAME: "city-api"
 
-stages:          # List of stages for jobs, and their order of execution
+stages:
   - build
   - test
 
-build-job:       # This job runs in the build stage, which runs first.
+build-job:
   stage: build
   script:
     - echo "Compiling the code..."
@@ -42,6 +48,19 @@ integrationtest-job:
     - echo "Running Integration Tests of the City API Application..."
     - "mvn package $MAVEN_CLI_OPTS"
     - echo "Complete Integration Tests of the City API Application..."
+  artifacts:
+    paths:
+      - target/
+
+copy-to-s3-job:
+  stage: copy-to-s3
+  dependencies:
+    - integrationtest-job
+  script:
+    - echo "Logging into AWS..."
+    - sh ./configure_aws.sh $ACCESS_KEY $SECRET_KEY $REGION
+    - echo "Copying Jar file to S3..."
+    - aws s3 cp target/$JAR_NAME s3://$S3_BUCKET/$JAR_NAME
   artifacts:
     paths:
       - target/
