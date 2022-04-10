@@ -13,11 +13,13 @@ variables:
   S3_BUCKET: "$AWS_S3_BUCKET"
   JAR_NAME: "city-api-0.0.1-SNAPSHOT.jar"
   APPLICATION_NAME: "city-api"
+  VERSION_LABEL: "Sample Application"
 
 stages:
   - build
   - test
   - copy-to-s3
+  - deploy
 
 build-job:
   stage: build
@@ -65,3 +67,15 @@ copy-to-s3-job:
   artifacts:
     paths:
       - target/
+
+deploy-job:
+  stage: deploy
+  dependencies:
+    - copy-to-s3-job
+  script:
+    - echo "Running deploy of the City API Application..."
+    - aws elasticbeanstalk create-application-version --application-name $APPLICATION_NAME --version-label $VERSION_LABEL --source-bundle S3Bucket=city-api-files,S3Key=$JAR_NAME
+    - aws elasticbeanstalk update-environment --application-name $APPLICATION_NAME --environment-name $APPLICATION_NAME-prod --version-label $VERSION_LABEL
+  artifacts:
+    paths:
+      - target/*.jar
