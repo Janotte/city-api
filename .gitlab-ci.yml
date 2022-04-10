@@ -33,3 +33,15 @@ unittest-job:
   artifacts:
     paths:
       - target/
+
+integrationtest-job:
+  stage: test
+  dependencies:
+    - unittest-job
+  script:
+    - echo "Running Integration Tests of the City API Application..."
+    - "mvn package $MAVEN_CLI_OPTS"
+    - echo "Complete Integration Tests of the City API Application..."
+  artifacts:
+    paths:
+      - target/
